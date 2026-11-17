@@ -35,10 +35,14 @@
   #bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:64% 50%}
   #vidAssembly{transition:opacity 1.1s ease}
   #vidAssembly.gone{opacity:0}
-  #grain{position:absolute;inset:-50px;pointer-events:none;opacity:.5;mix-blend-mode:overlay;
+  #grain{position:absolute;inset:-50px;pointer-events:none;opacity:.16;mix-blend-mode:overlay;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E")}
   #vignette{position:absolute;inset:0;pointer-events:none;
     background:radial-gradient(ellipse 120% 90% at 50% 45%, transparent 55%, rgba(5,3,2,.55) 100%)}
+  #fireGate{position:absolute;left:0;right:0;bottom:0;height:46%;pointer-events:none;
+    background:linear-gradient(to top, var(--bg) 18%, rgba(10,7,5,.85) 45%, transparent 100%);
+    opacity:1;transition:opacity 2.4s ease .3s}
+  #fireGate.open{opacity:0}
   #readShade{position:absolute;inset:0;pointer-events:none;
     background:linear-gradient(90deg, rgba(10,7,5,.78) 0%, rgba(10,7,5,.38) 34%, rgba(10,7,5,0) 58%)}
 
@@ -135,6 +139,7 @@
 <div id="bg">
   <video id="vidAmbient" src="ambient.mp4" muted playsinline loop autoplay preload="auto"></video>
   <video id="vidAssembly" src="assembly.mp4" muted playsinline preload="auto" poster="poster.jpg"></video>
+  <div id="fireGate"></div>
   <div id="grain"></div>
   <div id="vignette"></div>
   <div id="readShade"></div>
@@ -248,7 +253,10 @@
   setTimeout(reveal, 7000); // never trap the visitor
 
   // assembly plays once, then melts into the endless ambient loop
-  vA.addEventListener('ended', ()=> vA.classList.add('gone'));
+  vA.addEventListener('ended', ()=>{
+    vA.classList.add('gone');
+    document.getElementById('fireGate').classList.add('open');  // the fire comes in
+  });
   vB.addEventListener('click', e=>e.preventDefault());
 
   // ---------- scroll choreography ----------
