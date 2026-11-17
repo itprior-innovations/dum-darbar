@@ -26,7 +26,9 @@
   #loader .bar i{display:block;height:100%;width:0;background:var(--saffron);transition:width .3s ease}
   #loader .pct{font-size:11px;letter-spacing:.25em;color:var(--cream-45)}
 
-  nav{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;justify-content:space-between;align-items:center;padding:26px 5vw}
+  nav{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;justify-content:space-between;align-items:center;padding:26px 5vw;
+    background:linear-gradient(180deg, rgba(10,7,5,.82) 0%, rgba(10,7,5,.45) 55%, transparent 100%);padding-bottom:34px}
+  nav .logo,nav .links a{text-shadow:0 1px 10px rgba(10,7,5,.9)}
   nav .logo{font-family:'Fraunces',serif;font-size:17px;letter-spacing:.32em;color:var(--cream);text-decoration:none}
   nav .links{display:flex;gap:34px}
   nav .links a{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--cream-70);text-decoration:none;transition:color .3s}
@@ -231,13 +233,13 @@
   const MOB = {w:480, h:1038, pot:[(1235-MOB_OX)*MOB_S, (592-MOB_OY)*MOB_S+MOB_YOFF], base:'base_m.jpg', fin:'final_m.jpg',
     glows:[[0.10,0.47,26],[0.90,0.47,26]], zones:[[0.0,0.24,0.42,0.55],[0.76,1.0,0.42,0.55]]};
   const LAYERS = [
-    {n:1, x:1083, y:14,  w:387, h:102},
-    {n:2, x:1031, y:96,  w:439, h:86},
-    {n:3, x:1031, y:162, w:439, h:98},
-    {n:4, x:997,  y:240, w:473, h:94},
-    {n:5, x:990,  y:314, w:480, h:88},
-    {n:6, x:990,  y:382, w:480, h:128},
-    {n:7, x:990,  y:490, w:480, h:82}
+    {n:1, x:1083, y:15,  w:316, h:100},
+    {n:2, x:1065, y:97,  w:334, h:84},
+    {n:3, x:1062, y:163, w:404, h:96},
+    {n:4, x:1047, y:241, w:414, h:92},
+    {n:5, x:1049, y:315, w:420, h:86},
+    {n:6, x:1009, y:383, w:460, h:126},
+    {n:7, x:991,  y:491, w:477, h:80}
   ];
   const STEPS = [
     {kick:'Dum Darbar · Visakhapatnam', title:'Biryani, built <em>layer by layer.</em>',
