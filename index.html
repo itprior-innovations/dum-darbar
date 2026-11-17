@@ -257,7 +257,7 @@
     const total = r.height - window.innerHeight;
     return Math.min(1, Math.max(0, -r.top / total));
   }
-  const smooth = t => t*t*(3-2*t);
+  const smooth = t => { t = Math.min(1, Math.max(0, t)); return t*t*(3-2*t); };
 
   function tick(){
     target = progress();
