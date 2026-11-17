@@ -328,13 +328,18 @@
   // ---------- card ----------
   const cardKick = document.getElementById('cardKick'), cardTitle = document.getElementById('cardTitle'),
         cardText = document.getElementById('cardText'), cardCount = document.getElementById('cardCount');
+  const cardEls = [cardKick,cardTitle,cardText,cardCount];
+  let cardTl = null;
   function setCard(s){
     const c = STEPS[s];
-    gsap.to([cardKick,cardTitle,cardText,cardCount], {opacity:0, y:-14, duration:.28, ease:'power2.in', onComplete(){
-      cardKick.textContent = c.kick; cardTitle.innerHTML = c.title;
-      cardText.textContent = c.text; cardCount.textContent = c.count;
-      gsap.to([cardKick,cardTitle,cardText,cardCount], {opacity:1, y:0, duration:.5, stagger:.06, ease:'power3.out'});
-    }});
+    if(cardTl) cardTl.kill();
+    cardTl = gsap.timeline();
+    cardTl.to(cardEls, {opacity:0, y:-14, duration:.2, ease:'power2.in'})
+      .add(()=>{
+        cardKick.textContent = c.kick; cardTitle.innerHTML = c.title;
+        cardText.textContent = c.text; cardCount.textContent = c.count;
+      })
+      .to(cardEls, {opacity:1, y:0, duration:.45, stagger:.05, ease:'power3.out'});
   }
 
   // ---------- layer steps ----------
