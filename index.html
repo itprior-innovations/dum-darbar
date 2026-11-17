@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dum Darbar — Vizag's Royal Dum Biryani</title>
+<meta name="description" content="A cinematic scroll experience: seven layers of dum biryani, assembled by fire. Dum Darbar, Visakhapatnam.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0705;
+    --cream:#f3e9d7;
+    --saffron:#e8973a;
+    --saffron-dim:rgba(232,151,58,.55);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:auto}
+  body{
+    background:var(--bg);
+    color:var(--cream);
+    font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+  }
+  /* ---------- loader ---------- */
+  #loader{
+    position:fixed;inset:0;background:var(--bg);z-index:60;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+    transition:opacity .8s ease;
+  }
+  #loader.done{opacity:0;pointer-events:none}
+  #loader .brand{font-family:'Fraunces',serif;font-size:22px;letter-spacing:.35em;color:var(--cream)}
+  #loader .bar{width:180px;height:1px;background:rgba(243,233,215,.15);overflow:hidden}
+  #loader .bar i{display:block;height:100%;width:0;background:var(--saffron);transition:width .2s ease}
+  #loader .pct{font-size:11px;letter-spacing:.25em;color:rgba(243,233,215,.45)}
+  /* ---------- hero scroll ---------- */
+  #scroll-space{height:900vh;position:relative}
+  #stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+  #canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .veil{position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(90deg, rgba(10,7,5,.82) 0%, rgba(10,7,5,.45) 30%, rgba(10,7,5,0) 55%);}
+  /* ---------- text stages ---------- */
+  .caption{
+    position:absolute;left:7vw;top:50%;transform:translateY(-50%);
+    max-width:34vw;opacity:0;will-change:opacity,transform;pointer-events:none;
+  }
+  .caption .eyebrow{
+    font-size:11px;letter-spacing:.42em;text-transform:uppercase;
+    color:var(--saffron);margin-bottom:18px;font-weight:500;
+  }
+  .caption h1,.caption h2{
+    font-family:'Fraunces',serif;font-weight:500;line-height:1.05;
+    font-size:clamp(30px,4.2vw,62px);color:var(--cream);
+  }
+  .caption h1 em,.caption h2 em{font-style:italic;font-weight:300;color:var(--saffron)}
+  .caption p{
+    margin-top:20px;font-size:15px;line-height:1.7;font-weight:300;
+    color:rgba(243,233,215,.72);max-width:40ch;
+  }
+  .caption .step{
+    display:inline-block;margin-top:26px;font-size:11px;letter-spacing:.3em;
+    color:rgba(243,233,215,.4);text-transform:uppercase;
+  }
+  /* scroll hint */
+  #hint{
+    position:absolute;left:7vw;bottom:6vh;font-size:11px;letter-spacing:.35em;
+    text-transform:uppercase;color:rgba(243,233,215,.55);
+    display:flex;align-items:center;gap:14px;transition:opacity .4s;
+  }
+  #hint .line{width:44px;height:1px;background:var(--saffron-dim);position:relative;overflow:hidden}
+  #hint .line i{position:absolute;left:-44px;top:0;width:44px;height:1px;background:var(--saffron);
+    animation:slide 2.2s infinite ease-in-out}
+  @keyframes slide{to{left:44px}}
+  /* progress dots */
+  #dots{position:absolute;right:3.2vw;top:50%;transform:translateY(-50%);
+    display:flex;flex-direction:column;gap:12px;z-index:5}
+  #dots i{width:5px;height:5px;border-radius:50%;background:rgba(243,233,215,.22);transition:all .3s}
+  #dots i.on{background:var(--saffron);transform:scale(1.5)}
+  /* ---------- finale ---------- */
+  #finale{
+    position:relative;min-height:100vh;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;padding:12vh 8vw;
+    background:radial-gradient(ellipse 80% 60% at 50% 110%, rgba(232,151,58,.14), transparent 60%), var(--bg);
+  }
+  #finale .eyebrow{font-size:11px;letter-spacing:.42em;text-transform:uppercase;color:var(--saffron);margin-bottom:22px}
+  #finale h2{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(34px,5vw,72px);line-height:1.08;max-width:14ch}
+  #finale h2 em{font-style:italic;font-weight:300;color:var(--saffron)}
+  #finale p{margin-top:26px;max-width:52ch;font-weight:300;font-size:16px;line-height:1.8;color:rgba(243,233,215,.72)}
+  #finale .meta{margin-top:44px;display:flex;gap:38px;flex-wrap:wrap;justify-content:center}
+  #finale .meta div{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:rgba(243,233,215,.5)}
+  #finale .meta b{display:block;margin-bottom:8px;color:var(--cream);font-weight:500;letter-spacing:.3em}
+  footer{
+    padding:34px 7vw;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
+    border-top:1px solid rgba(243,233,215,.08);font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:rgba(243,233,215,.38);
+  }
+  /* ---------- mobile ---------- */
+  @media (max-width:820px){
+    .veil{background:linear-gradient(180deg, rgba(10,7,5,.85) 0%, rgba(10,7,5,.35) 42%, rgba(10,7,5,0) 70%)}
+    .caption{left:6vw;right:6vw;top:auto;bottom:9vh;transform:none;max-width:none}
+    .caption h1,.caption h2{font-size:clamp(28px,8.4vw,40px)}
+    .caption p{font-size:13.5px;margin-top:12px}
+    #hint{left:6vw;bottom:3.2vh}
+    #dots{right:4vw}
+  }
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="brand">DUM DARBAR</div>
+  <div class="bar"><i id="loadbar"></i></div>
+  <div class="pct" id="loadpct">LIGHTING THE FIRE — 0%</div>
+</div>
+
+<section id="scroll-space">
+  <div id="stage">
+    <canvas id="canvas"></canvas>
+    <div class="veil"></div>
+
+    <div class="caption" data-from="0.000" data-to="0.075">
+      <div class="eyebrow">Dum Darbar · Visakhapatnam</div>
+      <h1>Biryani, built <em>layer by layer.</em></h1>
+      <p>Seven layers. One handi. Slow fire. Scroll, and watch the dum come together the way it has for generations.</p>
+      <span class="step">The craft</span>
+    </div>
+
+    <div class="caption" data-from="0.085" data-to="0.195">
+      <div class="eyebrow">Layer 01</div>
+      <h2>Aged <em>basmati.</em></h2>
+      <p>Long-grain rice, aged two years, par-cooked in whole spices. The foundation every grain stands on.</p>
+      <span class="step">1 of 7</span>
+    </div>
+
+    <div class="caption" data-from="0.225" data-to="0.335">
+      <div class="eyebrow">Layer 02</div>
+      <h2>Chicken in its <em>own masala.</em></h2>
+      <p>Marinated overnight in curd, chilli and hand-pounded garam masala, then seared till the gravy turns glossy.</p>
+      <span class="step">2 of 7</span>
+    </div>
+
+    <div class="caption" data-from="0.365" data-to="0.475">
+      <div class="eyebrow">Layer 03</div>
+      <h2>Birista, fried to <em>amber.</em></h2>
+      <p>Onions sliced thin and fried low and slow — sweet, crisp, and the secret behind the handi's depth.</p>
+      <span class="step">3 of 7</span>
+    </div>
+
+    <div class="caption" data-from="0.505" data-to="0.615">
+      <div class="eyebrow">Layer 04</div>
+      <h2>A second seal <em>of rice.</em></h2>
+      <p>Another blanket of basmati locks the masala in, so the steam does the rest of the cooking.</p>
+      <span class="step">4 of 7</span>
+    </div>
+
+    <div class="caption" data-from="0.645" data-to="0.755">
+      <div class="eyebrow">Layer 05</div>
+      <h2>Saffron in <em>warm milk.</em></h2>
+      <p>Kashmiri saffron bloomed in milk, drizzled over the crown — the streaks of gold you see on every plate.</p>
+      <span class="step">5 of 7</span>
+    </div>
+
+    <div class="caption" data-from="0.785" data-to="0.875">
+      <div class="eyebrow">Layer 06</div>
+      <h2>Mint &amp; <em>coriander.</em></h2>
+      <p>Fresh from the morning market. Green, cool, and sharp against the fire underneath.</p>
+      <span class="step">6 of 7</span>
+    </div>
+
+    <div class="caption" data-from="0.905" data-to="1.001">
+      <div class="eyebrow">Layer 07 · The Finish</div>
+      <h2>Sealed with <em>fire.</em></h2>
+      <p>Egg, cashew and a final spoon of ghee. The dough seal traps forty minutes of dum — opened only at your table.</p>
+      <span class="step">7 of 7</span>
+    </div>
+
+    <div id="hint"><span class="line"><i></i></span> Scroll to assemble</div>
+    <div id="dots"></div>
+  </div>
+</section>
+
+<section id="finale">
+  <div class="eyebrow">Dum Darbar · Visakhapatnam</div>
+  <h2>Fire-sealed. <em>Steam-finished.</em></h2>
+  <p>Every handi is sealed with dough and cooked over slow coals, the way Vizag has always loved its biryani. One pot, seven layers, no shortcuts.</p>
+  <div class="meta">
+    <div><b>Handi</b>Chicken · Mutton · Veg</div>
+    <div><b>Fire</b>Slow dum · 40 min</div>
+    <div><b>City</b>Visakhapatnam</div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 Dum Darbar</span>
+  <span>Concept experience by ITPrior Innovations</span>
+</footer>
+
+<script src="frames_1.js"></script>
+<script src="frames_2.js"></script>
+<script src="frames_3.js"></script>
+<script src="frames_4.js"></script>
+<script src="frames_5.js"></script>
+<script src="frames_6.js"></script>
+<script src="frames_7.js"></script>
+<script src="frames_8.js"></script>
+<script src="frames_9.js"></script>
+<script src="frames_10.js"></script>
+<script src="frames_11.js"></script>
+<script>
+(function(){
+  const TOTAL = 22;
+  const frames = [];
+  let loaded = 0;
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const space = document.getElementById('scroll-space');
+  const hint = document.getElementById('hint');
+  const dotsBox = document.getElementById('dots');
+  const loadbar = document.getElementById('loadbar');
+  const loadpct = document.getElementById('loadpct');
+  const loader = document.getElementById('loader');
+  const captions = Array.from(document.querySelectorAll('.caption'));
+
+  // progress dots: 8 keyframe stages
+  const dots = [];
+  for (let i=0;i<8;i++){ const d=document.createElement('i'); dotsBox.appendChild(d); dots.push(d); }
+
+  function resize(){
+    const dpr = Math.min(window.devicePixelRatio||1, 2);
+    canvas.width = canvas.clientWidth * dpr;
+    canvas.height = canvas.clientHeight * dpr;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function drawFrame(i){
+    const img = frames[i];
+    if(!img || !img.complete || !img.naturalWidth) return;
+    const cw = canvas.width, ch = canvas.height;
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    const scale = Math.max(cw/iw, ch/ih);
+    const dw = iw*scale, dh = ih*scale;
+    // focal point: the handi sits right of centre
+    const narrow = cw/ch < 1.1;
+    const fx = narrow ? 0.70 : 0.62;
+    const dx = Math.min(0, Math.max(cw-dw, cw*fx - dw*fx));
+    const dy = (ch-dh)/2;
+    ctx.fillStyle = '#0a0705';
+    ctx.fillRect(0,0,cw,ch);
+    ctx.drawImage(img, dx, dy, dw, dh);
+  }
+
+  let target = 0, shown = -1;
+  function progress(){
+    const r = space.getBoundingClientRect();
+    const total = r.height - window.innerHeight;
+    return Math.min(1, Math.max(0, -r.top / total));
+  }
+  const smooth = t => t*t*(3-2*t);
+
+  function tick(){
+    target = progress();
+    const f = target*(TOTAL-1);
+    const idx = Math.round(f);
+    if(idx !== shown){
+      shown = idx;
+      drawFrame(idx);
+      const stage = Math.round(target*7);
+      dots.forEach((d,i)=>d.classList.toggle('on', i<=stage));
+      hint.style.opacity = target > 0.02 ? 0 : 1;
+    }
+    captions.forEach(c=>{
+      const a=parseFloat(c.dataset.from), b=parseFloat(c.dataset.to);
+      const pad=0.035;
+      let o=0;
+      if(target>=a && target<=b){
+        o = Math.min(smooth((target-a)/pad), smooth((b-target)/pad), 1);
+        if(b-a < pad*2) o = 1;
+      }
+      const y = (1-o)*26;
+      c.style.opacity = o;
+      c.style.transform = (window.innerWidth>820)
+        ? `translateY(calc(-50% + ${y}px))`
+        : `translateY(${y}px)`;
+    });
+    requestAnimationFrame(tick);
+  }
+
+  // preload (frames embedded as data URIs in frames_*.js)
+  const FRAMES = [].concat(FRAMES_1,FRAMES_2,FRAMES_3,FRAMES_4,FRAMES_5,FRAMES_6,FRAMES_7,FRAMES_8,FRAMES_9,FRAMES_10,FRAMES_11);
+  for(let i=0;i<TOTAL;i++){
+    const img = new Image();
+    img.src = 'data:image/webp;base64,' + FRAMES[i];
+    img.onload = img.onerror = ()=>{
+      loaded++;
+      const pct = Math.round(loaded/TOTAL*100);
+      loadbar.style.width = pct+'%';
+      loadpct.textContent = `LIGHTING THE FIRE — ${pct}%`;
+      if(loaded===TOTAL){
+        drawFrame(0);
+        loader.classList.add('done');
+        requestAnimationFrame(tick);
+      }
+    };
+    frames.push(img);
+  }
+})();
+</script>
+</body>
+</html>
