@@ -385,6 +385,9 @@
       snap:{snapTo:1/7, duration:{min:.25,max:.55}, ease:'power2.inOut'},
       onUpdate: st => setStep(Math.round(st.progress*7))
     });
+    // hero card clears as the next section slides over the released pin
+    gsap.fromTo(['#card','#dots'], {autoAlpha:1}, {autoAlpha:0, ease:'none',
+      scrollTrigger:{trigger:'#craft', start:'top 96%', end:'top 60%', scrub:true}});
     document.querySelectorAll('#craft, #menu, #visit').forEach(sec=>{
       const items = sec.querySelectorAll('[data-anim]');
       gsap.set(items, {opacity:0, y:44});
