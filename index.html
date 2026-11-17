@@ -281,8 +281,15 @@
   function layout(){
     computeMode();
     const g = coverRect(); geo = g;
+    const POT_CX = 1235, FS = 0.85;
     LAYERS.forEach(L => {
       let fx = L.x, fy = L.y, fw = L.w, fh = L.h;
+      if(mode === DESK){
+        // re-form the stack: slightly smaller, centered on the pot, lowered clear of the nav
+        fw = L.w*FS; fh = L.h*FS;
+        fx = POT_CX - fw/2;
+        fy = 62 + (L.y-15)*0.88;
+      }
       if(mode === MOB){
         fx = (L.x-MOB_OX)*MOB_S; fy = (L.y-MOB_OY)*MOB_S + MOB_YOFF;
         fw = L.w*MOB_S; fh = L.h*MOB_S;
