@@ -32,18 +32,16 @@ body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-seri
 #track{height:560vh;position:relative;z-index:2}
 #stage{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--bg)}
 .film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .18s linear;pointer-events:none}
-#plateWrap{position:absolute;inset:0;opacity:0;overflow:hidden}
-#plate{width:100%;height:100%;object-fit:cover;transform-origin:50% 55%;filter:brightness(.8) contrast(1.07) saturate(1.05)}
-#plateWrap::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(10,7,5,.82) 0%,rgba(10,7,5,.3) 38%,transparent 62%)}
+#plateScrim{position:absolute;inset:0;opacity:0;pointer-events:none;z-index:4;background:linear-gradient(to top,rgba(10,7,5,.9) 0%,rgba(10,7,5,.42) 42%,rgba(10,7,5,.18) 66%,rgba(10,7,5,.05))}
 /* beats */
-.beat{position:absolute;left:50%;transform:translateX(-50%);width:max-content;max-width:88vw;text-align:center;pointer-events:none;opacity:0;transition:opacity .4s ease;z-index:5;padding:14px 30px 16px;border-radius:20px;background:rgba(10,7,5,.5);border:1px solid rgba(232,163,61,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.beat{position:absolute;left:50%;transform:translateX(-50%);width:max-content;max-width:88vw;text-align:center;pointer-events:none;opacity:0;transition:opacity .4s ease;z-index:5;padding:14px 30px 16px;border-radius:20px;background:rgba(10,7,5,.68);border:1px solid rgba(232,163,61,.2);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .beat.on{opacity:1}
 .beat h2{font-size:clamp(26px,4.6vw,46px);font-weight:500;text-shadow:0 2px 18px rgba(0,0,0,.6)}
 .beat h2 em{font-style:italic;color:var(--amber)}
 .beat p{color:var(--dim);font-size:clamp(13px,2vw,16px);margin-top:9px;letter-spacing:.06em}
 .beat.top{top:9svh}.beat.bot{bottom:8svh}
 /* dish card on plated */
-#dish{position:absolute;left:clamp(20px,7vw,110px);bottom:clamp(90px,16svh,150px);z-index:6;opacity:0;transition:opacity .5s ease;text-align:left;pointer-events:none}
+#dish{position:absolute;left:clamp(20px,7vw,110px);bottom:clamp(90px,16svh,150px);z-index:6;opacity:0;transition:opacity .5s ease;text-align:left;pointer-events:none;max-width:min(480px,86vw);background:rgba(10,7,5,.7);border:1px solid rgba(232,163,61,.22);border-radius:20px;padding:22px 28px 24px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 #dish.on{opacity:1}
 #dish .name{font-family:Fraunces,Georgia,serif;font-size:clamp(30px,4.4vw,52px);font-weight:500;line-height:1.05;text-shadow:0 2px 20px rgba(0,0,0,.65)}
 #dish .desc{color:var(--dim);margin-top:10px;font-size:clamp(13px,1.6vw,16px);max-width:340px;line-height:1.6}
@@ -81,7 +79,8 @@ footer a{color:#8f7f68;text-decoration:none}
     <video class="film" id="vFire" muted playsinline preload="auto" data-key="fire"></video>
     <video class="film" id="vBuild" muted playsinline preload="auto" data-key="build"></video>
     <video class="film" id="vReveal" muted playsinline preload="auto" data-key="reveal"></video>
-    <div id="plateWrap"><img id="plate" data-key="plated" alt="Chicken dum biryani, plated"></div>
+    <video class="film" id="vPlate" muted playsinline preload="auto" data-key="plated"></video>
+    <div id="plateScrim"></div>
 
     <div class="beat top" id="b0"><h2 class="serif">Real <em>wood fire</em></h2><p>The handi goes straight onto the flame</p></div>
     <div class="beat bot" id="b1"><h2 class="serif">Sealed over <em>coals</em></h2><p>Saffron, masala, aged basmati — layered and shut</p></div>
@@ -102,14 +101,14 @@ footer a{color:#8f7f68;text-decoration:none}
 
 <footer>
   <div>Dum Darbar · demo concept · no real orders</div>
-  <div>Photography: <a href="https://www.pexels.com" target="_blank" rel="noopener">Pexels</a> (free licence) · Fire footage: <a href="https://mixkit.co" target="_blank" rel="noopener">Mixkit</a> (free licence) · Motion: Wan 2.2 open model (Apache 2.0)</div>
+  <div>Footage: Pexels (free licence) &middot; Fire footage: Mixkit (free licence)<a href="https://www.pexels.com" target="_blank" rel="noopener">Pexels</a> (free licence) · Fire footage: <a href="https://mixkit.co" target="_blank" rel="noopener">Mixkit</a> (free licence) · Motion: Wan 2.2 open model (Apache 2.0)</div>
 </footer>
 
 <div class="bar"><i id="barfill"></i></div>
 
 <script>
 // media bootstrap: base64 chunks -> blob URLs (GitHub Pages binary workaround)
-const MEDIA = {fire:{n:8,mime:'video/mp4'}, build:{n:4,mime:'video/mp4'}, reveal:{n:3,mime:'video/mp4'}, plated:{n:3,mime:'image/jpeg'}};
+const MEDIA = {fire:{n:8,mime:'video/mp4'}, build:{n:5,mime:'video/mp4'}, reveal:{n:6,mime:'video/mp4'}, plated:{n:6,mime:'video/mp4'}};
 function loadScript(src){ return new Promise(res => { const el = document.createElement('script'); el.src = src; el.onload = el.onerror = () => res(); document.head.appendChild(el); }); }
 async function bootMedia(){
   window.DD3 = {};
@@ -128,13 +127,14 @@ bootMedia();
 <script>
 const $ = id => document.getElementById(id);
 const films = [
-  {el: $('vFire'),   dur: 6.0, from: 0.00, to: 0.34},
-  {el: $('vBuild'),  dur: 5.063, from: 0.30, to: 0.66},
-  {el: $('vReveal'), dur: 5.063, from: 0.62, to: 0.93},
+  {el: $('vFire'),   dur: 6.0, from: 0.00, to: 0.25},
+  {el: $('vBuild'),  dur: 5.005, from: 0.23, to: 0.50},
+  {el: $('vReveal'), dur: 5.005, from: 0.48, to: 0.75},
+  {el: $('vPlate'),  dur: 5.52, from: 0.73, to: 0.995},
 ];
 const beats = [$('b0'), $('b1'), $('b2')];
-const bwin = [[0.02,0.26],[0.34,0.60],[0.66,0.90]];
-const track = $('track'), barfill = $('barfill'), plateWrap = $('plateWrap'), plate = $('plate'), dish = $('dish');
+const bwin = [[0.02,0.21],[0.26,0.47],[0.51,0.71]];
+const track = $('track'), barfill = $('barfill'), plateScrim = $('plateScrim'), dish = $('dish');
 
 // veil: lift when all films can play
 let loaded = 0;
@@ -180,10 +180,9 @@ function tick(){
   }
 
   // plated finale
-  const pp = Math.min(Math.max((p - 0.90) / 0.10, 0), 1);
-  plateWrap.style.opacity = pp.toFixed(3);
-  plate.style.transform = `scale(${(1.14 - pp * 0.14).toFixed(4)})`;
-  dish.classList.toggle('on', p > 0.93);
+  const pp = Math.min(Math.max((p - 0.76) / 0.14, 0), 1);
+  plateScrim.style.opacity = pp.toFixed(3);
+  dish.classList.toggle('on', p > 0.86);
 
   beats.forEach((b, i) => b.classList.toggle('on', p >= bwin[i][0] && p < bwin[i][1]));
 }
