@@ -77,10 +77,10 @@ footer a{color:#8f7f68;text-decoration:none}
 
 <div id="track">
   <div id="stage">
-    <video class="film" id="vFire" muted playsinline preload="auto" src="fire.mp4"></video>
-    <video class="film" id="vBuild" muted playsinline preload="auto" src="build.mp4"></video>
-    <video class="film" id="vReveal" muted playsinline preload="auto" src="reveal.mp4"></video>
-    <div id="plateWrap"><img id="plate" src="plated.jpg" alt="Chicken dum biryani, plated"></div>
+    <video class="film" id="vFire" muted playsinline preload="auto" data-key="fire"></video>
+    <video class="film" id="vBuild" muted playsinline preload="auto" data-key="build"></video>
+    <video class="film" id="vReveal" muted playsinline preload="auto" data-key="reveal"></video>
+    <div id="plateWrap"><img id="plate" data-key="plated" alt="Chicken dum biryani, plated"></div>
 
     <div class="beat top" id="b0"><h2 class="serif">Real <em>wood fire</em></h2><p>The handi goes straight onto the flame</p></div>
     <div class="beat bot" id="b1"><h2 class="serif">Sealed over <em>coals</em></h2><p>Saffron, masala, aged basmati — layered and shut</p></div>
@@ -106,6 +106,24 @@ footer a{color:#8f7f68;text-decoration:none}
 
 <div class="bar"><i id="barfill"></i></div>
 
+<script>
+// media bootstrap: base64 chunks -> blob URLs (GitHub Pages binary workaround)
+const MEDIA = {fire:{n:8,mime:'video/mp4'}, build:{n:4,mime:'video/mp4'}, reveal:{n:3,mime:'video/mp4'}, plated:{n:3,mime:'image/jpeg'}};
+function loadScript(src){ return new Promise(res => { const el = document.createElement('script'); el.src = src; el.onload = el.onerror = () => res(); document.head.appendChild(el); }); }
+async function bootMedia(){
+  window.DD3 = {};
+  const jobs = Object.entries(MEDIA).map(async ([key, m]) => {
+    for (let i = 0; i < m.n; i++) await loadScript(`v3c/${key}${String(i).padStart(2,'0')}.js`);
+    let b64 = ''; for (let i = 0; i < m.n; i++) b64 += window.DD3[`${key}${i}`] || '';
+    const raw = atob(b64); const B = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) B[i] = raw.charCodeAt(i);
+    const url = URL.createObjectURL(new Blob([B], {type: m.mime}));
+    const el = document.querySelector(`[data-key="${key}"]`); if (el) el.src = url;
+  });
+  await Promise.all(jobs);
+}
+bootMedia();
+</script>
 <script>
 const $ = id => document.getElementById(id);
 const films = [
