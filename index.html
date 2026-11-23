@@ -3,19 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Dum Darbar - Fire-Sealed. Steam-Finished.</title>
-<meta name="description" content="Hyderabadi dum biryani, built layer by layer over a real wood fire. Scroll to build the dum.">
+<title>Dum Darbar — Fire-Sealed. Steam-Finished.</title>
+<meta name="description" content="Hyderabadi dum biryani over a real wood fire. Scroll to build the dum.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
 <style>
 :root{--bg:#0a0705;--ink:#f3e9dc;--dim:#b9a88f;--amber:#e8a33d}
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:auto}
 body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;overflow-x:hidden}
 .serif{font-family:Fraunces,Georgia,serif}
-/* fire video behind everything in the build */
-#fire{position:fixed;left:50%;bottom:-6vh;transform:translateX(-50%);width:min(120vw,760px);height:auto;mix-blend-mode:screen;opacity:0;pointer-events:none;z-index:1;filter:saturate(1.15);-webkit-mask-image:radial-gradient(120% 135% at 50% 110%,#000 38%,transparent 72%);mask-image:radial-gradient(120% 135% at 50% 110%,#000 38%,transparent 72%)}
+/* top bar */
+.nav{position:fixed;inset:0 0 auto 0;display:flex;justify-content:space-between;align-items:center;padding:20px 28px;z-index:10;mix-blend-mode:difference}
+.nav .brand{font-family:Fraunces,Georgia,serif;font-size:19px;letter-spacing:.18em;text-transform:uppercase}
+.nav .links{display:flex;gap:26px;font-size:11.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--ink)}
+.nav .links span{opacity:.75}
+@media(max-width:760px){.nav .links span:not(:last-child){display:none}}
 /* hero */
 .hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:6vh 24px;position:relative;z-index:2}
 .kick{letter-spacing:.42em;text-transform:uppercase;font-size:11px;color:var(--amber);font-weight:600}
@@ -24,20 +28,29 @@ body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-seri
 .hero p{color:var(--dim);font-size:clamp(14px,2.4vw,17px);max-width:520px;line-height:1.65}
 .hint{margin-top:5vh;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--dim);animation:bob 2.2s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(7px)}}
-/* build section */
-#track{height:640vh;position:relative;z-index:2}
-#stage{position:sticky;top:0;height:100svh;display:flex;align-items:center;justify-content:center;overflow:hidden}
-#cv{width:min(96vw,1180px,calc(72svh*1.6));max-height:74svh;display:block;object-fit:contain;border-radius:6px}
-.beat{position:absolute;left:50%;transform:translateX(-50%);width:max-content;max-width:88vw;text-align:center;pointer-events:none;opacity:0;transition:opacity .45s ease;z-index:3;padding:14px 30px 16px;border-radius:20px;background:rgba(10,7,5,.55);border:1px solid rgba(232,163,61,.18);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 12px 40px rgba(0,0,0,.45)}
+/* scroll film */
+#track{height:560vh;position:relative;z-index:2}
+#stage{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--bg)}
+.film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .18s linear;pointer-events:none}
+#plateWrap{position:absolute;inset:0;opacity:0;overflow:hidden}
+#plate{width:100%;height:100%;object-fit:cover;transform-origin:50% 55%}
+/* beats */
+.beat{position:absolute;left:50%;transform:translateX(-50%);width:max-content;max-width:88vw;text-align:center;pointer-events:none;opacity:0;transition:opacity .4s ease;z-index:5;padding:14px 30px 16px;border-radius:20px;background:rgba(10,7,5,.5);border:1px solid rgba(232,163,61,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .beat.on{opacity:1}
 .beat h2{font-size:clamp(26px,4.6vw,46px);font-weight:500;text-shadow:0 2px 18px rgba(0,0,0,.6)}
 .beat h2 em{font-style:italic;color:var(--amber)}
-.beat p{color:var(--dim);font-size:clamp(13px,2vw,16px);margin-top:10px;letter-spacing:.06em}
-.beat.top{top:6svh}.beat.bot{bottom:6.5svh}
-.bar{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;width:120px;height:2px;background:#ffffff1f;border-radius:2px;z-index:4}
+.beat p{color:var(--dim);font-size:clamp(13px,2vw,16px);margin-top:9px;letter-spacing:.06em}
+.beat.top{top:9svh}.beat.bot{bottom:8svh}
+/* dish card on plated */
+#dish{position:absolute;left:clamp(20px,7vw,110px);bottom:clamp(90px,16svh,150px);z-index:6;opacity:0;transition:opacity .5s ease;text-align:left;pointer-events:none}
+#dish.on{opacity:1}
+#dish .name{font-family:Fraunces,Georgia,serif;font-size:clamp(30px,4.4vw,52px);font-weight:500;line-height:1.05;text-shadow:0 2px 20px rgba(0,0,0,.65)}
+#dish .desc{color:var(--dim);margin-top:10px;font-size:clamp(13px,1.6vw,16px);max-width:340px;line-height:1.6}
+#dish .price{font-family:Fraunces,Georgia,serif;font-size:clamp(20px,2.6vw,30px);color:var(--amber);margin-top:14px}
+.bar{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;width:120px;height:2px;background:#ffffff1f;border-radius:2px;z-index:8}
 .bar i{display:block;height:100%;width:0;background:var(--amber);border-radius:2px}
 /* outro */
-.outro{min-height:92svh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:10vh 24px;position:relative;z-index:2;background:linear-gradient(#0a070500,#0a0705 18%)}
+.outro{min-height:90svh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:10vh 24px;position:relative;z-index:2;background:linear-gradient(#0a070500,#0a0705 22%)}
 .outro h2{font-size:clamp(34px,7vw,72px);font-weight:500;line-height:1.05}
 .outro h2 em{font-style:italic;color:var(--amber)}
 .outro p{color:var(--dim);margin-top:16px;max-width:480px;line-height:1.65;font-size:clamp(13px,2.2vw,16px)}
@@ -50,89 +63,110 @@ footer a{color:#8f7f68;text-decoration:none}
 <body>
 <div id="veil">firing the handi…</div>
 
-<video id="fire" muted loop autoplay playsinline preload="auto"></video>
+<div class="nav">
+  <div class="brand serif">Dum Darbar</div>
+  <div class="links"><span>Menu</span><span>The Fire</span><span>Visit</span></div>
+</div>
 
 <section class="hero">
-  <div class="kick">Dum Darbar · Hyderabad</div>
+  <div class="kick">Hyderabadi Dum Biryani</div>
   <h1 class="serif">Fire-sealed.<br><em>Steam-finished.</em></h1>
-  <p>Real wood fire. Real handi. Forty minutes of slow dum, built layer by layer. Scroll, and watch the dum come together the way it has for four hundred years.</p>
-  <div class="hint">Scroll to build the dum</div>
+  <p>Real wood fire. Real handi. Forty minutes of slow dum, layered the way it has been for four hundred years. Scroll, and watch it happen.</p>
+  <div class="hint">Scroll</div>
 </section>
 
-<section id="track">
+<div id="track">
   <div id="stage">
-    <canvas id="cv" width="640" height="800"></canvas>
-    <div class="beat top" id="b0"><h2 class="serif">The <em>handi</em></h2><p>Clay pot, straight onto the coals</p></div>
-    <div class="beat bot" id="b1"><h2 class="serif">Aged <em>basmati</em></h2><p>Par-boiled, grain by grain</p></div>
-    <div class="beat top" id="b2"><h2 class="serif">The <em>masala</em></h2><p>Chicken, marinated overnight</p></div>
-    <div class="beat bot" id="b3"><h2 class="serif"><em>Saffron</em> rice</h2><p>Kesar soaked in warm milk</p></div>
-    <div class="beat top" id="b4"><h2 class="serif">Birista &amp; <em>mint</em></h2><p>Fried onion, fresh pudina</p></div>
-    <div class="beat bot" id="b5"><h2 class="serif">Sealed on <em>dum</em></h2><p>Opened at your table</p></div>
+    <video class="film" id="vFire" muted playsinline preload="auto" src="fire.mp4"></video>
+    <video class="film" id="vBuild" muted playsinline preload="auto" src="build.mp4"></video>
+    <video class="film" id="vReveal" muted playsinline preload="auto" src="reveal.mp4"></video>
+    <div id="plateWrap"><img id="plate" src="plated.jpg" alt="Chicken dum biryani, plated"></div>
+
+    <div class="beat top" id="b0"><h2 class="serif">Real <em>wood fire</em></h2><p>The handi goes straight onto the flame</p></div>
+    <div class="beat bot" id="b1"><h2 class="serif">Sealed over <em>coals</em></h2><p>Saffron, masala, aged basmati — layered and shut</p></div>
+    <div class="beat top" id="b2"><h2 class="serif">Steam-<em>finished</em></h2><p>Forty minutes later, the seal breaks at your table</p></div>
+    <div id="dish">
+      <div class="name serif">Chicken Dum Biryani</div>
+      <div class="desc">Handi-layered aged basmati, overnight masala, saffron milk, birista. Sealed on dum over a real wood fire.</div>
+      <div class="price">₹349</div>
+    </div>
   </div>
-</section>
-<div class="bar"><i id="barfill"></i></div>
+</div>
 
 <section class="outro">
-  <h2 class="serif">Four hundred years,<br><em>one pot.</em></h2>
-  <p>Every dum is sealed with dough and opened at your table, so the first breath of steam is yours.</p>
-  <a class="cta" href="#">Reserve a table</a>
+  <h2 class="serif">Come hungry.<br><em>Leave slow.</em></h2>
+  <p>Dum Darbar — a concept table for the slow-cooked. Built as a live demo.</p>
+  <a class="cta" href="#track">Watch it again</a>
 </section>
 
 <footer>
-  <div>Dum Darbar · a concept experience by ITPrior Innovations</div>
-  <div>Photography: <a href="https://www.pexels.com" target="_blank" rel="noopener">Pexels</a> (free licence) · Fire footage: <a href="https://mixkit.co" target="_blank" rel="noopener">Mixkit</a> (free licence)</div>
+  <div>Dum Darbar · demo concept · no real orders</div>
+  <div>Photography: <a href="https://www.pexels.com" target="_blank" rel="noopener">Pexels</a> (free licence) · Fire footage: <a href="https://mixkit.co" target="_blank" rel="noopener">Mixkit</a> (free licence) · Motion: Wan 2.2 open model (Apache 2.0)</div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+<div class="bar"><i id="barfill"></i></div>
+
 <script>
-const MOBILE = matchMedia('(max-width: 760px), (pointer: coarse)').matches;
-const SERIES = MOBILE
-  ? {idx: [["fire", 0, 1254632], ["f0000", 1254632, 9018], ["f0001", 1263650, 9018], ["f0002", 1272668, 9018], ["f0003", 1281686, 29858], ["f0004", 1311544, 32233], ["f0005", 1343777, 36536], ["f0006", 1380313, 38704], ["f0007", 1419017, 40401], ["f0008", 1459418, 42069], ["f0009", 1501487, 43166], ["f0010", 1544653, 43286], ["f0011", 1587939, 43241], ["f0012", 1631180, 43158], ["f0013", 1674338, 42813], ["f0014", 1717151, 42201], ["f0015", 1759352, 40987], ["f0016", 1800339, 55061], ["f0017", 1855400, 57458], ["f0018", 1912858, 59895], ["f0019", 1972753, 62110], ["f0020", 2034863, 65543], ["f0021", 2100406, 65720], ["f0022", 2166126, 64328], ["f0023", 2230454, 62118], ["f0024", 2292572, 59693], ["f0025", 2352265, 54536], ["f0026", 2406801, 51913], ["f0027", 2458714, 49975], ["f0028", 2508689, 48427], ["f0029", 2557116, 47878], ["f0030", 2604994, 58563], ["f0031", 2663557, 60766], ["f0032", 2724323, 63194], ["f0033", 2787517, 65920], ["f0034", 2853437, 66168], ["f0035", 2919605, 64319], ["f0036", 2983924, 61940], ["f0037", 3045864, 59057], ["f0038", 3104921, 56023], ["f0039", 3160944, 52855], ["f0040", 3213799, 48375], ["f0041", 3262174, 47228], ["f0042", 3309402, 47018], ["f0043", 3356420, 49126], ["f0044", 3405546, 52264], ["f0045", 3457810, 56369], ["f0046", 3514179, 57789], ["f0047", 3571968, 56902], ["f0048", 3628870, 56823], ["f0049", 3685693, 56916], ["f0050", 3742609, 55021], ["f0051", 3797630, 52862], ["f0052", 3850492, 50222], ["f0053", 3900714, 48144], ["f0054", 3948858, 46550], ["f0055", 3995408, 46202], ["f0056", 4041610, 46467], ["f0057", 4088077, 47199], ["f0058", 4135276, 48275], ["f0059", 4183551, 49290], ["f0060", 4232841, 49554], ["f0061", 4282395, 49551], ["f0062", 4331946, 49541], ["f0063", 4381487, 49392], ["f0064", 4430879, 48824], ["f0065", 4479703, 46440], ["f0066", 4526143, 45245], ["f0067", 4571388, 44425], ["f0068", 4615813, 44017], ["f0069", 4659830, 43934], ["f0070", 4703764, 43897], ["f0071", 4747661, 43934], ["f0072", 4791595, 43939], ["f0073", 4835534, 43912], ["f0074", 4879446, 43623], ["f0075", 4923069, 43623], ["f0076", 4966692, 43623], ["f0077", 5010315, 43586], ["f0078", 5053901, 43586], ["f0079", 5097487, 43586], ["f0080", 5141073, 43586], ["f0081", 5184659, 43586], ["f0082", 5228245, 43623], ["f0083", 5271868, 43623], ["f0084", 5315491, 43623], ["f0085", 5359114, 43623], ["f0086", 5402737, 43586], ["f0087", 5446323, 43623], ["f0088", 5489946, 43623], ["f0089", 5533569, 43623], ["f0090", 5577192, 43218], ["f0091", 5620410, 42646], ["f0092", 5663056, 42295], ["f0093", 5705351, 42119], ["f0094", 5747470, 41967], ["f0095", 5789437, 41806], ["f0096", 5831243, 41847], ["f0097", 5873090, 41937], ["f0098", 5915027, 42136], ["f0099", 5957163, 42316], ["f0100", 5999479, 43102], ["f0101", 6042581, 43531], ["f0102", 6086112, 44031], ["f0103", 6130143, 44621], ["f0104", 6174764, 45245], ["f0105", 6220009, 46830], ["f0106", 6266839, 47789], ["f0107", 6314628, 48809], ["f0108", 6363437, 49202], ["f0109", 6412639, 49202]], nchunks: 36, path: i => 'chunks/d' + String(i).padStart(2,'0') + '.js', N: 110, cw: 640, ch: 800, g: 'DD'}
-  : {idx: [["fire", 0, 1360638], ["f0000", 1360638, 10319], ["f0001", 1370957, 10319], ["f0002", 1381276, 10319], ["f0003", 1391595, 35748], ["f0004", 1427343, 37584], ["f0005", 1464927, 39530], ["f0006", 1504457, 42265], ["f0007", 1546722, 47944], ["f0008", 1594666, 49973], ["f0009", 1644639, 51364], ["f0010", 1696003, 52286], ["f0011", 1748289, 52263], ["f0012", 1800552, 51383], ["f0013", 1851935, 49523], ["f0014", 1901458, 62356], ["f0015", 1963814, 63512], ["f0016", 2027326, 63623], ["f0017", 2090949, 64086], ["f0018", 2155035, 65370], ["f0019", 2220405, 66129], ["f0020", 2286534, 66291], ["f0021", 2352825, 64303], ["f0022", 2417128, 62282], ["f0023", 2479410, 60900], ["f0024", 2540310, 59257], ["f0025", 2599567, 58389], ["f0026", 2657956, 65165], ["f0027", 2723121, 66483], ["f0028", 2789604, 68153], ["f0029", 2857757, 67590], ["f0030", 2925347, 68205], ["f0031", 2993552, 67835], ["f0032", 3061387, 66270], ["f0033", 3127657, 63350], ["f0034", 3191007, 61308], ["f0035", 3252315, 58204], ["f0036", 3310519, 57764], ["f0037", 3368283, 57710], ["f0038", 3425993, 60098], ["f0039", 3486091, 62001], ["f0040", 3548092, 63520], ["f0041", 3611612, 64523], ["f0042", 3676135, 65469], ["f0043", 3741604, 62841], ["f0044", 3804445, 60546], ["f0045", 3864991, 58354], ["f0046", 3923345, 56698], ["f0047", 3980043, 56173], ["f0048", 4036216, 56481], ["f0049", 4092697, 56432], ["f0050", 4149129, 57169], ["f0051", 4206298, 57695], ["f0052", 4263993, 58204], ["f0053", 4322197, 57977], ["f0054", 4380174, 58575], ["f0055", 4438749, 56332], ["f0056", 4495081, 55149], ["f0057", 4550230, 54271], ["f0058", 4604501, 53982], ["f0059", 4658483, 53623], ["f0060", 4712106, 53561], ["f0061", 4765667, 53543], ["f0062", 4819210, 53525], ["f0063", 4872735, 53536], ["f0064", 4926271, 53234], ["f0065", 4979505, 53234], ["f0066", 5032739, 53234], ["f0067", 5085973, 53234], ["f0068", 5139207, 53218], ["f0069", 5192425, 53218], ["f0070", 5245643, 53218], ["f0071", 5298861, 53234], ["f0072", 5352095, 53234], ["f0073", 5405329, 53234], ["f0074", 5458563, 53234], ["f0075", 5511797, 53234], ["f0076", 5565031, 53234], ["f0077", 5618265, 53234], ["f0078", 5671499, 53234], ["f0079", 5724733, 52611], ["f0080", 5777344, 51923], ["f0081", 5829267, 51405], ["f0082", 5880672, 51018], ["f0083", 5931690, 50581], ["f0084", 5982271, 50585], ["f0085", 6032856, 50662], ["f0086", 6083518, 50968], ["f0087", 6134486, 51166], ["f0088", 6185652, 51635], ["f0089", 6237287, 52207], ["f0090", 6289494, 53740], ["f0091", 6343234, 54565], ["f0092", 6397799, 55591], ["f0093", 6453390, 56862], ["f0094", 6510252, 57961], ["f0095", 6568213, 57961]], nchunks: 37, path: i => 'wchunks/e' + String(i).padStart(2,'0') + '.js', N: 96, cw: 960, ch: 600, g: 'DDW'};
-const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
-cv.width = SERIES.cw; cv.height = SERIES.ch;
-// load chunk scripts sequentially, then decode
-function loadChunks(i, done){
-  if (i >= SERIES.nchunks) return done();
-  const s = document.createElement('script');
-  s.src = SERIES.path(i); s.onload = () => loadChunks(i+1, done); s.onerror = () => loadChunks(i+1, done);
-  document.head.appendChild(s);
-}
-const frames = new Array(SERIES.N);
-let started = false;
-function draw(i){ const im = frames[i]; if (im && im.complete && im.naturalWidth) ctx.drawImage(im,0,0,cv.width,cv.height); }
-loadChunks(0, () => {
-  const raw = atob(window[SERIES.g]); const B = new Uint8Array(raw.length);
-  for (let i=0;i<raw.length;i++) B[i]=raw.charCodeAt(i);
-  const URLS = {};
-  for (const [name, o, l] of SERIES.idx){ URLS[name] = URL.createObjectURL(new Blob([B.slice(o, o+l)], {type: name==='fire'?'video/mp4':'image/jpeg'})); }
-  fire.src = URLS['fire'];
-  let ready = 0;
-  for (let i=0;i<SERIES.N;i++){ const im = new Image(); im.src = URLS['f'+String(i).padStart(4,'0')]; frames[i]=im;
-    im.onload = im.onerror = ()=>{ ready++; if (!started && ready >= SERIES.N*0.5){ started = true; start(); } if (i===0) draw(0); }; }
-  setTimeout(()=>{ if(!started){ started=true; start(); } }, 9000);
+const $ = id => document.getElementById(id);
+const films = [
+  {el: $('vFire'),   dur: 6.0, from: 0.00, to: 0.34},
+  {el: $('vBuild'),  dur: 5.063, from: 0.30, to: 0.66},
+  {el: $('vReveal'), dur: 5.063, from: 0.62, to: 0.93},
+];
+const beats = [$('b0'), $('b1'), $('b2')];
+const bwin = [[0.02,0.26],[0.34,0.60],[0.66,0.90]];
+const track = $('track'), barfill = $('barfill'), plateWrap = $('plateWrap'), plate = $('plate'), dish = $('dish');
+
+// veil: lift when all films can play
+let loaded = 0;
+films.forEach(f => {
+  const ok = () => { loaded++; if (loaded >= films.length) lift(); };
+  f.el.addEventListener('canplaythrough', ok, {once:true});
+  f.el.addEventListener('error', ok, {once:true});
+  f.el.load();
 });
-const fire = document.getElementById('fire'), track = document.getElementById('track'), barfill = document.getElementById('barfill');
-const beats = [...document.querySelectorAll('.beat')];
-const win = [[0.00,0.13],[0.14,0.30],[0.31,0.47],[0.48,0.64],[0.65,0.80],[0.81,1.01]];
-let cur = -1, lenis;
+setTimeout(lift, 7000);
+let lifted = false;
+function lift(){
+  if (lifted) return; lifted = true;
+  const v = $('veil'); v.style.opacity = 0; setTimeout(() => v.remove(), 650);
+  start();
+}
+
+let lenis;
 function start(){
-  const v = document.getElementById('veil'); if (v){ v.style.opacity = 0; setTimeout(()=>v.remove(), 700); }
   lenis = new Lenis({lerp: 0.09, smoothWheel: true});
   function raf(t){ lenis.raf(t); tick(); requestAnimationFrame(raf); }
   requestAnimationFrame(raf);
-  fire.play().catch(()=>{});
 }
+
 function tick(){
   const r = track.getBoundingClientRect();
   const total = r.height - innerHeight;
-  const p = Math.min(Math.max(-r.top/total, 0), 1);
-  const idx = Math.min(Math.round(p*(SERIES.N-1)), SERIES.N-1);
-  if (idx !== cur){ cur = idx; draw(idx); }
-  barfill.style.width = (p*100)+'%';
-  fire.style.opacity = Math.min(p/0.18, 1)*0.9;
-  beats.forEach((b,i)=>{ b.classList.toggle('on', p>=win[i][0] && p<win[i][1]); });
+  const p = Math.min(Math.max(-r.top / total, 0), 1);
+  barfill.style.width = (p * 100) + '%';
+
+  for (const f of films){
+    const sp = Math.min(Math.max((p - f.from) / (f.to - f.from), 0), 1);
+    const target = sp * (f.dur - 0.15);
+    if (Math.abs(f.el.currentTime - target) > 0.05){
+      try { f.el.currentTime = target; } catch(e){}
+    }
+    // visibility: full inside own window, fade across 0.04 overlaps
+    let o = 0;
+    if (p >= f.from && p <= f.to) o = 1;
+    else if (p < f.from && p > f.from - 0.04) o = 1 - (f.from - p) / 0.04;
+    else if (p > f.to && p < f.to + 0.04) o = 1 - (p - f.to) / 0.04;
+    f.el.style.opacity = o.toFixed(3);
+  }
+
+  // plated finale
+  const pp = Math.min(Math.max((p - 0.90) / 0.10, 0), 1);
+  plateWrap.style.opacity = pp.toFixed(3);
+  plate.style.transform = `scale(${(1.14 - pp * 0.14).toFixed(4)})`;
+  dish.classList.toggle('on', p > 0.93);
+
+  beats.forEach((b, i) => b.classList.toggle('on', p >= bwin[i][0] && p < bwin[i][1]));
 }
 </script>
 </body>
