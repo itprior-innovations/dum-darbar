@@ -108,7 +108,7 @@ footer a{color:#8f7f68;text-decoration:none}
 
 <script>
 // media bootstrap: base64 chunks -> blob URLs (GitHub Pages binary workaround)
-const MEDIA = {fire:{n:8,mime:'video/mp4'}, build:{n:5,mime:'video/mp4'}, reveal:{n:6,mime:'video/mp4'}, plated:{n:6,mime:'video/mp4'}};
+const MEDIA = {fire:{n:15,mime:'video/mp4'}, build:{n:9,mime:'video/mp4'}, reveal:{n:6,mime:'video/mp4'}, plated:{n:6,mime:'video/mp4'}};
 function loadScript(src){ return new Promise(res => { const el = document.createElement('script'); el.src = src; el.onload = el.onerror = () => res(); document.head.appendChild(el); }); }
 async function bootMedia(){
   window.DD3 = {};
@@ -128,7 +128,7 @@ bootMedia();
 const $ = id => document.getElementById(id);
 const films = [
   {el: $('vFire'),   dur: 6.0, from: 0.00, to: 0.25},
-  {el: $('vBuild'),  dur: 5.005, from: 0.23, to: 0.50},
+  {el: $('vBuild'),  dur: 6.0, from: 0.23, to: 0.50},
   {el: $('vReveal'), dur: 5.005, from: 0.48, to: 0.75},
   {el: $('vPlate'),  dur: 5.52, from: 0.73, to: 0.995},
 ];
